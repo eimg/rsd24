@@ -1,0 +1,62 @@
+ls, ls -la                        # list files
+cd                                # change directory
+pwd                               # current path
+touch                             # create new files
+cat                               # read file content
+echo                              # output content
+less                              # read big file
+mkdir, mkdir -p                   # create directory
+cp, cp -r                         # copy file, directory
+mv                                # move or rename file, dir
+rm, rm -r                         # delete file, dir
+ln -s                             # create shortcut      
+clear                             # clear screen
+exit                              # exit terminal
+tar czf arc.tar.gv f...           # create archive
+tar xzf arc.tar.gv                # extract archive
+gzip, gunzip                      # compress/decompress
+nano                              # edit file
+vim                               # edit file
+ps aux                            # view all processes
+top                               # view all processes
+kill PID                          # force stop process
+chmod                             # change permission
+which cmd                         # find out cmd location
+wget, wget -c                     # download file
+cmd | grep                        # filter cmd output
+
+apt install|remove|update|upgrade|dist-upgrade       
+snap install|remove|refresh
+
+ssh                               # remote manage server
+scp                               # remove copy or download
+
+service service-name start|stop|restart|reload 
+
+!!                                # recall last cmd
+
+shutdown -r -now                  # restart right now
+export                            # Change PATH var
+
+----------
+
+git init                          # create git repo
+git add [files]                   # add files for staging
+git commit -m [msg]               # commit changes
+git status                        # view repo status
+git log                           # view commit history
+git tag [tag]                     # tag current commit
+git checkout [tag]                # checkout tagged commit
+git checkout [hash]               # checkout commit by hash
+git branch                        # view existing branches
+git branch [name]                 # create branch
+git checkout [branch]             # change branch
+git checkout                      # change back to master/main
+git checkout -b [branch]          # create branch and switch to it
+git merge [branch]                # merge [branch] to current branch
+git rebase [branch]               # bombine [branch] with curren branch
+git init --bare                   # create repo with only history
+git clone [repo]                  # create repo based on [repo]
+git pull                          # get updates from origin repo
+git push                          # send update to origin repo
+git remote add origin [repo]      # set origin for current repo
