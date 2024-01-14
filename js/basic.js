@@ -3,7 +3,7 @@ const arr = [1, 2];
 const [n1, n2] = arr;           
 console.log(n1);
 
-// Object destrucutre
+// Object destructure
 const user = { name: 'Alice', age: 22 };
 const { name, age } = user;     
 console.log(name);
@@ -21,10 +21,10 @@ const add = function(a, b) {
 add(1, 2);
 
 // Arrow Function
-const sum = (a, b) => console.log(a + b);
-sum(2, 3);
+const sum = (a, b) => a + b;
+console.log( sum(2, 3) );
 
-// Parameter Destructure
+// Parameter Destructuring
 function hello({ name }) {
     console.log(`Hello ${name}`);
 }
@@ -35,7 +35,7 @@ hello({ name: 'Bob' });
     console.log(a - b);
 })(4, 1);
 
-// Higher order function
+// Higher-order function
 const fn = () => () => {
 	console.log("Done");
 };

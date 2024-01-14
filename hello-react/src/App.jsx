@@ -1,4 +1,9 @@
-import { useState } from "react"
+import { useState } from "react";
+import AddForm from "./AddForm";
+import CheckList from "./CheckList";
+import Header from "./Header";
+
+import { Container } from "@mui/material";
 
 export default function App() {
     const [list, setList] = useState([
@@ -7,20 +12,26 @@ export default function App() {
         { _id: 3, subject: 'Mango', done: false },
     ]);
 
-    const add = () => {
+    const add = subject => {
+        if(!subject) return false;
+
         const _id = list[list.length - 1]._id + 1;
-        setList([...list, { _id, subject: 'Add' }]);
+        setList([...list, { _id, subject, done: false }]);
     }
 
-    return <div role='main'>
-        <h1>Hello React</h1>
-        <button onClick={add}>Button</button>
-        <ul>
-            {list.map(item => {
-                return <li key={item._id}>
-                    {item.subject}
-                </li>
-            })}
-        </ul>
-    </div>
+    const remove = _id => {
+        setList(
+            list.filter(item => item._id !== _id)
+        );
+    }
+
+    return (
+		<div role="main">
+			<Header count={list.length} />
+			<Container maxWidth="sm" sx={{ mt: 4 }}>
+				<AddForm add={add} />
+				<CheckList list={list} remove={remove} />
+			</Container>
+		</div>
+	);
 }
