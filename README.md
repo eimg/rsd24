@@ -6,6 +6,7 @@ Weekly source code update for Rockstar Developer Course - 2024 (January).
 * Linux, Git
 * NPM, Vite, React
 * React Router, MUI
+* Redux, Redux Toolkit
 * ExpressJS, MongoDB
 * API Design, Auth
 * React Native, Expo
@@ -29,6 +30,9 @@ Weekly source code update for Rockstar Developer Course - 2024 (January).
 * [WSL Manual Install](https://learn.microsoft.com/en-us/windows/wsl/install-manual)
 * [NVM (Node Version Manager)](https://github.com/nvm-sh/nvm)
 * [Install Github CLI (Ubuntu)](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
+
+### Redux
+* [RTK Sample Setup](https://github.com/eimg/rsd23/tree/main/hello-rtk)
 
 ### MongoDB
 * [MongoDB Install (Ubuntu)](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/)
