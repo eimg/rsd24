@@ -39,6 +39,7 @@ export default function CheckList({ list, remove, toggle, done }) {
 						}>
 						<ListItemIcon>
 							<IconButton
+                                
 								onClick={() => {
 									toggle(item._id);
 								}}>

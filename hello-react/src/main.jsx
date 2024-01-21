@@ -6,12 +6,10 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { CssBaseline } from "@mui/material";
-import AppRouter from "./AppRouter.jsx";
+import Theme from "./Theme";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
-        <CssBaseline />
-		<AppRouter />
+		<Theme />
 	</React.StrictMode>
 );

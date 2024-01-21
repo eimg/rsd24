@@ -1,10 +1,10 @@
 import Header from "./Header";
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 export default function Template({ list, clear }) {
 	return (
-		<div role="main">
+		<Box>
 			<Header
 				count={list.filter(item => !item.done).length}
                 clear={clear}
@@ -12,6 +12,6 @@ export default function Template({ list, clear }) {
             <Container sx={{ mt: 4 }} maxWidth="sm">
                 <Outlet />
             </Container>
-		</div>
+		</Box>
 	);
 }
