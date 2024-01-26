@@ -31,8 +31,10 @@ Weekly source code update for Rockstar Developer Course - 2024 (January).
 * [NVM (Node Version Manager)](https://github.com/nvm-sh/nvm)
 * [Install Github CLI (Ubuntu)](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
 
-### Redux
-* [RTK Sample Setup](https://github.com/eimg/rsd23/tree/main/hello-rtk)
+### Setups, Configs, Samples
+* [Minimal React Build](https://gist.github.com/eimg/50832314c7bfbc8d46ed65c44b9d76b5)
+* [RTK Starter Template 1](https://gist.github.com/eimg/ceac3b3161ed96d886f33b3769039f5a)
+* [RTK Starter Template 2](https://gist.github.com/eimg/cd849643da09cdea12348d205c4f5339)
 
 ### MongoDB
 * [MongoDB Install (Ubuntu)](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/)
