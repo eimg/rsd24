@@ -35,6 +35,7 @@ Weekly source code update for Rockstar Developer Course - 2024 (January).
 * [Minimal React Build](https://gist.github.com/eimg/50832314c7bfbc8d46ed65c44b9d76b5)
 * [RTK Starter Template 1](https://gist.github.com/eimg/ceac3b3161ed96d886f33b3769039f5a)
 * [RTK Starter Template 2](https://gist.github.com/eimg/cd849643da09cdea12348d205c4f5339)
+* [Mongo Aggregate Pipeline](https://gist.github.com/eimg/07e5d151753115202b8be7b1afb930e0)
 
 ### MongoDB
 * [MongoDB Install (Ubuntu)](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/)
