@@ -16,7 +16,7 @@ import {
 import { Link } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
-import { remove } from "./app/todoSlice";
+import { remove, toggle } from "./app/todoSlice";
 
 export default function CheckList({ list, done }) {
     const dispatch = useDispatch();
@@ -44,9 +44,8 @@ export default function CheckList({ list, done }) {
 						}>
 						<ListItemIcon>
 							<IconButton
-                                
 								onClick={() => {
-									// toggle(item._id);
+									dispatch( toggle(item._id) );
 								}}>
 								{done ? (
 									<DoneIcon color="success" />

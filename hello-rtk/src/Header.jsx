@@ -9,11 +9,14 @@ import {
 	DeleteSweep as ClearAllIcon,
 } from "@mui/icons-material";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { clear } from "./app/todoSlice";
 
 export default function Header() {
     const { mode, setMode } = useContext(ThemeContext);
     const list = useSelector(state => state.todo.items);
+
+    const dispatch = useDispatch();
 
 	return (
 		<AppBar position="static">
@@ -48,7 +51,9 @@ export default function Header() {
 					)}
                     
 					<IconButton
-						onClick={() => {}}
+						onClick={() => {
+                            dispatch( clear() );
+                        }}
 						color="inherit">
 						<ClearAllIcon />
 					</IconButton>
