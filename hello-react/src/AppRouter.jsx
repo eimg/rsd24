@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import App from "./App.jsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -6,12 +6,16 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Edit from "./Edit.jsx";
 import Template from "./Template.jsx";
 
+const api = "http://localhost:8888/tasks";
+
 export default function AppRouter() {
-	const [list, setList] = useState([
-		{ _id: 1, subject: "Apple", done: false },
-		{ _id: 2, subject: "Orange", done: true },
-		{ _id: 3, subject: "Mango", done: false },
-	]);
+	const [list, setList] = useState([]);
+
+    useEffect(() => {
+        fetch(api)
+            .then(res => res.json())
+            .then(json => setList(json));
+    }, []);
 
 	const update = (_id, subject) => {
 		if (!subject) return false;

@@ -19,6 +19,9 @@ Weekly source code update for Rockstar Developer Course - 2024 (January).
 
 ## Tasks
 * [Try Github Pages](https://pages.github.com)
+* Study [Fastify](https://fastify.dev/)
+* Study [Prisma ORM](https://www.prisma.io/)
+* Study [React Query](https://tanstack.com/query/latest), [SWR](https://swr.vercel.app/) and [React Router Loader](https://reactrouter.com/en/main/route/loader)
 
 ## Resources
 

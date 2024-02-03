@@ -1,5 +1,4 @@
 const { MongoClient } = require("mongodb");
-
 const client = new MongoClient("mongodb://localhost");
 
 const db = client.db("todo");
