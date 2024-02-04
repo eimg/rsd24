@@ -10,15 +10,29 @@ const api = "http://localhost:8888/tasks";
 
 export default function AppRouter() {
 	const [list, setList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetch(api)
-            .then(res => res.json())
-            .then(json => setList(json));
-    }, []);
+	useEffect(() => {
+
+		(async () => {
+			const res = await fetch(api);
+			const data = await res.json();
+            setList(data);
+            setIsLoading(false);
+		})();
+
+	}, []);
 
 	const update = (_id, subject) => {
 		if (!subject) return false;
+
+        fetch(`${api}/${_id}`, {
+            method: 'put',
+            body: JSON.stringify({ subject }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
 		setList(
 			list.map(item => {
@@ -28,18 +42,28 @@ export default function AppRouter() {
 		);
 	};
 
-	const add = subject => {
+	const add = async (subject) => {
 		if (!subject) return false;
 
-		const _id = list[list.length - 1]._id + 1;
-		setList([...list, { _id, subject, done: false }]);
+        const res = await fetch(api, {
+            method: 'post',
+            body: JSON.stringify({ subject }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await res.json();
+		setList([...list, data]);
 	};
 
-	const remove = _id => {
+	const remove =  _id => {
+        fetch(`${api}/${_id}`, { method: 'delete' });
 		setList(list.filter(item => item._id !== _id));
 	};
 
 	const toggle = _id => {
+        fetch(`${api}/toggle/${_id}`, { method: 'put' });
 		setList(
 			list.map(item => {
 				if (item._id === _id) item.done = !item.done;
@@ -49,6 +73,7 @@ export default function AppRouter() {
 	};
 
 	const clear = () => {
+        fetch(api, { method: 'delete' });
 		setList(list.filter(item => !item.done));
 	};
 
@@ -57,6 +82,7 @@ export default function AppRouter() {
 			path: "/",
 			element: (
 				<Template
+                    isLoading={isLoading}
 					list={list}
 					clear={clear}
 				/>
