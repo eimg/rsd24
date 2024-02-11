@@ -20,8 +20,8 @@ async function seedUsers() {
 	let data = [];
 
 	for (let i = 2; i <= number_of_users; i++) {
-		let firstName = faker.name.firstName();
-		let lastName = faker.name.lastName();
+		let firstName = faker.person.firstName();
+		let lastName = faker.person.lastName();
 
 		// let hash = await bcrypt.hash("password", 10);
 

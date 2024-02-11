@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
 		padding: 15,
 		borderBottomWidth: 1,
 		borderBottomColor: "#ddd",
+		alignItems: "center",
 	},
 	itemText: {
 		flexGrow: 1,
@@ -40,20 +41,47 @@ const styles = StyleSheet.create({
 	},
 });
 
+const api = "http://192.168.100.116:8888/tasks";
+
 export default function App() {
 	const [subject, setSubject] = useState("");
+	const [tasks, setTasks] = useState([]);
 
-	const [tasks, setTasks] = useState([
-		{ _id: 1, subject: "Apple", done: false },
-		{ _id: 2, subject: "Orange", done: false },
-		{ _id: 3, subject: "Milk", done: false },
-		{ _id: 4, subject: "Bread", done: false },
-	]);
+	useEffect(() => {
+		(async () => {
+			const res = await fetch(api);
+			const data = await res.json();
 
-	const add = () => {
-		const _id = tasks[tasks.length - 1]._id + 1;
-		setTasks([...tasks, { _id, subject, done: false }]);
+			setTasks(data);
+		})();
+	}, []);
+
+	const add = async () => {
+		const res = await fetch(api, {
+			method: "POST",
+			body: JSON.stringify({ subject }),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await res.json();
+
+		setTasks([...tasks, data]);
 		setSubject("");
+	};
+
+	const toggle = async _id => {
+		await fetch(`${api}/toggle/${_id}`, {
+            method: 'PUT',
+        });
+
+		setTasks(
+			tasks.map(item => {
+				if (item._id === _id) item.done = !item.done;
+				return item;
+			})
+		);
 	};
 
 	return (
@@ -71,34 +99,101 @@ export default function App() {
 			</View>
 
 			<View style={styles.list}>
-				{tasks.map(item => (
-					<View
-						style={styles.listItem}
-						key={item._id}>
-						<Text style={styles.itemText}>{item.subject}</Text>
+				{tasks
+					.filter(item => !item.done)
+					.map(item => (
+						<View
+							style={styles.listItem}
+							key={item._id}>
+							<TouchableOpacity
+								onPress={() => {
+									toggle(item._id);
+								}}>
+								<FontAwesome
+									name="check"
+									style={{
+										fontSize: 18,
+										color: "#999",
+										marginRight: 10,
+									}}
+								/>
+							</TouchableOpacity>
 
-						<Link href="/edit" style={{ marginRight: 10 }}>
-							<FontAwesome
-								name="edit"
-								style={{ fontSize: 18, color: "teal" }}
-							/>
-						</Link>
+							<Text style={styles.itemText}>{item.subject}</Text>
 
-						<TouchableOpacity
-							onPress={() => {
-								setTasks(
-									tasks.filter(task => {
-										return task._id !== item._id;
-									})
-								);
-							}}>
-							<FontAwesome
-								name="trash"
-								style={{ fontSize: 18, color: "salmon" }}
-							/>
-						</TouchableOpacity>
-					</View>
-				))}
+							<Link
+								href={`/edit/${item._id}`}
+								style={{ marginRight: 10 }}>
+								<FontAwesome
+									name="edit"
+									style={{ fontSize: 18, color: "teal" }}
+								/>
+							</Link>
+
+							<TouchableOpacity
+								onPress={() => {
+									setTasks(
+										tasks.filter(task => {
+											return task._id !== item._id;
+										})
+									);
+								}}>
+								<FontAwesome
+									name="trash"
+									style={{ fontSize: 18, color: "salmon" }}
+								/>
+							</TouchableOpacity>
+						</View>
+					))}
+			</View>
+
+			<View style={styles.list}>
+				{tasks
+					.filter(item => item.done)
+					.map(item => (
+						<View
+							style={styles.listItem}
+							key={item._id}>
+							<TouchableOpacity
+								onPress={() => {
+									toggle(item._id);
+								}}>
+								<FontAwesome
+									name="check"
+									style={{
+										fontSize: 18,
+										color: "green",
+										marginRight: 10,
+									}}
+								/>
+							</TouchableOpacity>
+
+							<Text style={[styles.itemText, { color: '#aaa' }]}>{item.subject}</Text>
+
+							<Link
+								href={`/edit/${item._id}`}
+								style={{ marginRight: 10 }}>
+								<FontAwesome
+									name="edit"
+									style={{ fontSize: 18, color: "teal" }}
+								/>
+							</Link>
+
+							<TouchableOpacity
+								onPress={() => {
+									setTasks(
+										tasks.filter(task => {
+											return task._id !== item._id;
+										})
+									);
+								}}>
+								<FontAwesome
+									name="trash"
+									style={{ fontSize: 18, color: "salmon" }}
+								/>
+							</TouchableOpacity>
+						</View>
+					))}
 			</View>
 		</View>
 	);

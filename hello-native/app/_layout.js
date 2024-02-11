@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Slot, usePathname, Link } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const styles = StyleSheet.create({
@@ -49,6 +50,7 @@ export default function App() {
 				<Text style={styles.title}>Todo</Text>
 			</View>
 			<Slot />
+            <StatusBar style="light" />
 		</View>
 	);
 }

@@ -1,20 +1,24 @@
 const { MongoClient } = require("mongodb");
 const client = new MongoClient("mongodb://localhost");
 
-const db = client.db("todo");
-const tasks = db.collection("tasks");
+const x = client.db("x");
 
 async function getData() {
-    const data = await tasks.find().limit(1).toArray();
-    console.log(data);
-    process.exit(0);
-}
+	const data = await x.collection("posts")
+		.aggregate([
+			{
+				$lookup: {
+					from: "users",
+					localField: "owner",
+					foreignField: "_id",
+					as: "owner_user",
+				},
+			},
+			{ $limit: 1, },
+		]).toArray();
 
-async function insertData(data) {
-    const result = await tasks.insertOne(data);
-    console.log(result);
-    process.exit(0);
+	console.log(data[0].owner_user);
+	process.exit(0);
 }
 
 getData();
-// insertData({ subject: 'Test', done: false });
