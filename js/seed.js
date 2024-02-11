@@ -96,7 +96,7 @@ async function seedFollows() {
 
 		for (let i = 0; i < following.length; i++) {
 			await db.collection("users").updateOne(
-				{ _id: new ObjectId(following[i]) },
+				{ _id: following[i] },
 				{
 					$set: {
 						followers: [new ObjectId(first_user_id)],
@@ -107,7 +107,7 @@ async function seedFollows() {
 
 		for (let i = 0; i < followers.length; i++) {
 			await db.collection("users").updateOne(
-				{ _id: new ObjectId(followers[i]) },
+				{ _id: followers[i] },
 				{
 					$set: {
 						following: [new ObjectId(first_user_id)],
