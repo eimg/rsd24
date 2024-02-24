@@ -9,12 +9,15 @@ import "@fontsource/roboto/700.css";
 
 import AppThemeProvider from "./providers/AppThemeProvider.jsx";
 import UIStateProvider from "./providers/UIStateProvider.jsx";
+import AuthProvider from "./providers/AuthProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<AppThemeProvider>
 			<UIStateProvider>
-				<App />
+				<AuthProvider>
+					<App />
+				</AuthProvider>
 			</UIStateProvider>
 		</AppThemeProvider>
 	</React.StrictMode>
