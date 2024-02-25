@@ -28,7 +28,7 @@ import { useAuth } from "../providers/AuthProvider";
 
 export default function AppDrawer() {
 	const { openDrawer, setOpenDrawer } = useUIState();
-    const { auth, setAuth } = useAuth();
+    const { auth, setAuth, authUser, setAuthUser } = useAuth();
 
     const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ export default function AppDrawer() {
 									height: 98,
 									background: pink[500],
 								}}>
-								A
+								{authUser.name[0]}
 							</Avatar>
 							<Box sx={{ ml: 3 }}>
 								<Typography
@@ -64,7 +64,7 @@ export default function AppDrawer() {
 										fontWeight: "bold",
 										color: blue[500],
 									}}>
-									Alice
+									{authUser.name}
 								</Typography>
 								<Typography
 									sx={{
@@ -72,7 +72,7 @@ export default function AppDrawer() {
 										color: grey[600],
 										mt: -1,
 									}}>
-									@alice
+									@{authUser.handle}
 								</Typography>
 							</Box>
 						</Box>
@@ -113,7 +113,9 @@ export default function AppDrawer() {
 									disableRipple
 									onClick={() => {
 										setAuth(false);
-										// setOpenDrawer(false);
+                                        setAuthUser({});
+                                        localStorage.removeItem("token");
+										setOpenDrawer(false);
 									}}>
 									<ListItemIcon>
 										<LogoutIcon />
@@ -143,9 +145,8 @@ export default function AppDrawer() {
 								<ListItemButton
 									disableRipple
 									onClick={() => {
-										// navigate("/login");
-                                        setAuth(true);
-										// setOpenDrawer(false);
+										navigate("/login");
+										setOpenDrawer(false);
 									}}>
 									<ListItemIcon>
 										<LoginIcon />

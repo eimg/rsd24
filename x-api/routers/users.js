@@ -61,6 +61,7 @@ router.post("/login", async (req, res) => {
 
     if(user) {
         if(await bcrypt.compare(password, user.password)) {
+            delete user.password;
             const token = jwt.sign(user, process.env.JWT_SECRET);
             return res.json({ token });
         }
@@ -69,6 +70,28 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ 
         msg: 'incorrect handle or password' 
     });
+});
+
+router.post("/users", async (req, res) => {
+    const { name, handle, profile, password } = req.body;
+    if(!name || !handle || !password) {
+        return res.status(400).json({
+            msg: 'name, handle, password: all required'
+        });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    const user = {
+		name, handle, profile,
+		password: hash,
+		created: new Date(),
+		followers: [],
+	};
+
+    const result = await xusers.insertOne(user);
+    user._id = result.insertedId;
+
+    return res.json(user);
 });
 
 module.exports = { usersRouter: router };

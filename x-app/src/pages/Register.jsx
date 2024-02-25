@@ -1,7 +1,7 @@
 import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useRef, useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
 	const nameRef = useRef();
@@ -9,7 +9,10 @@ export default function Register() {
 	const profileRef = useRef();
 	const passwordRef = useRef();
 
+    const navigate = useNavigate();
+
 	const [hasError, setHasError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
 	return (
 		<Box>
@@ -25,17 +28,33 @@ export default function Register() {
 
 						if (!name || !handle || !password) {
 							setHasError(true);
-						} else {
-							setHasError(false);
+                            return false;
 						}
 
-						return false;
+						(async () => {
+                            const api = import.meta.env.VITE_API_URL;
+                            const res = await fetch(`${api}/users`, {
+                                method: 'POST',
+                                body: JSON.stringify({ name, handle, profile, password }),
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            });
+
+                            if(!res.ok) {
+                                setErrorMessage('something wrong, please try again');
+                                setHasError(true);
+                                return false;
+                            }
+
+                            navigate("/login");
+                        })();
 					}}>
 					{hasError && (
 						<Alert
 							severity="warning"
 							sx={{ mb: 4 }}>
-							name, handle or password required
+							{errorMessage}
 						</Alert>
 					)}
 
