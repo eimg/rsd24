@@ -1,30 +1,39 @@
 import {
-    Box,
-    Typography,
-    Card,
-    CardContent,
-    CardActionArea,
-    IconButton,
-    Button,
-    ButtonGroup,
-    Avatar,
+	Box,
+	Typography,
+	Card,
+	CardContent,
+	CardActionArea,
+	IconButton,
+	Button,
+	ButtonGroup,
+	Avatar,
+	Menu,
+	MenuItem,
+    ListItemIcon,
+    ListItemText,
 } from "@mui/material";
 
 import {
-    MoreVert as MenuIcon,
-    FavoriteBorder as LikeIcon,
-    Favorite as LikedIcon,
-    Comment as CommentIcon,
+	MoreVert as MenuIcon,
+	Comment as CommentIcon,
+    Delete as DeleteIcon,
 } from "@mui/icons-material";
 
-import { blue, green, pink, grey } from "@mui/material/colors";
+import { blue, green, grey } from "@mui/material/colors";
 
 import { format } from "date-fns";
 
-import { useAuth } from "../providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
-export default function PostCard({ post }) {
-	const { auth, authUser } = useAuth();
+import LikeButton from "./LikeButton";
+import { useState } from "react";
+
+export default function PostCard({ post, like, unlike }) {
+	const navigate = useNavigate();
+
+	const [showMenu, setShowMenu] = useState(false);
+	const [menuPosition, setMenuPosition] = useState(null);
 
 	return (
 		<Card sx={{ mb: 2 }}>
@@ -39,12 +48,12 @@ export default function PostCard({ post }) {
 						sx={{
 							display: "flex",
 							alignItems: "center",
-							gap: 3,
+							gap: 2,
 						}}>
 						<Avatar
 							sx={{
-								width: 75,
-								height: 75,
+								width: 64,
+								height: 64,
 								background: blue[500],
 							}}>
 							P
@@ -62,17 +71,44 @@ export default function PostCard({ post }) {
 										color: green[500],
 										fontSize: 14,
 									}}>
-									- {format(post.created, "MMM d, Y")}
+									• {format(post.created, "MMM d, y")}
 								</Typography>
 							</Box>
-							<Typography sx={{ color: grey[500], fontSize: 16 }}>
-								{post.owner.handle}
+							<Typography sx={{ color: grey[500], fontSize: 14 }}>
+								@{post.owner.handle}
 							</Typography>
 						</Box>
 					</Box>
-					<IconButton>
-						<MenuIcon />
-					</IconButton>
+					<Box>
+						<IconButton
+							onClick={e => {
+								setShowMenu(true);
+								setMenuPosition(e.currentTarget);
+							}}>
+							<MenuIcon />
+						</IconButton>
+						<Menu
+							anchorEl={menuPosition}
+							open={showMenu}
+							anchorOrigin={{
+								vertical: "top",
+								horizontal: "right",
+							}}
+							transformOrigin={{
+								vertical: "top",
+								horizontal: "right",
+							}}
+							onClose={() => {
+								setShowMenu(false);
+							}}>
+							<MenuItem>
+								<ListItemIcon>
+									<DeleteIcon color="error" />
+								</ListItemIcon>
+								<ListItemText primary="Delete" />
+							</MenuItem>
+						</Menu>
+					</Box>
 				</Box>
 				<CardActionArea>
 					<Typography sx={{ py: 2, px: 1 }}>{post.body}</Typography>
@@ -83,21 +119,16 @@ export default function PostCard({ post }) {
 						justifyContent: "space-around",
 					}}>
 					<ButtonGroup>
-						<IconButton>
-							{auth && post.likes ? (
-								post.likes.find(
-									like => like === authUser._id
-								) ? (
-									<LikedIcon sx={{ color: pink[500] }} />
-								) : (
-									<LikeIcon sx={{ color: pink[500] }} />
-								)
-							) : (
-								<LikeIcon sx={{ color: pink[500] }} />
-							)}
-						</IconButton>
-
-						<Button variant="text">
+						<LikeButton
+							post={post}
+							like={like}
+							unlike={unlike}
+						/>
+						<Button
+							variant="text"
+							onClick={() => {
+								navigate(`/likes/${post._id}`);
+							}}>
 							{post.likes ? post.likes.length : 0}
 						</Button>
 					</ButtonGroup>

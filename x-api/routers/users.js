@@ -18,7 +18,7 @@ const jwt = require("jsonwebtoken");
 const { auth } = require("../middlewares/auth");
 
 router.get("/verify", auth, (req, res) => {
-    return res.json(res.locals.user);
+	return res.json(res.locals.user);
 });
 
 router.get("/users", auth, async (req, res) => {
@@ -29,6 +29,21 @@ router.get("/users", auth, async (req, res) => {
 		.toArray();
 
 	return res.json(data);
+});
+
+router.get("/users/likes/:id", async (req, res) => {
+	const { id } = req.params;
+	const post = await xdb
+		.collection("posts")
+		.findOne({ _id: new ObjectId(id) });
+        
+	const users = await xusers
+		.find({
+			_id: { $in: post.likes },
+		})
+		.toArray();
+
+	return res.json(users);
 });
 
 router.get("/users/:id", async (req, res) => {
@@ -42,56 +57,58 @@ router.get("/users/:id", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-    const { handle, password } = req.body;
-    if(!handle || !password) {
-        return res.status(400).json({
-            msg: 'handle or password required'
-        });
-    }
+	const { handle, password } = req.body;
+	if (!handle || !password) {
+		return res.status(400).json({
+			msg: "handle or password required",
+		});
+	}
 
-    const user = await xusers.findOne(
-        { handle },
-        { 
-            projection: {
-                followers: 0,
-                following: 0,
-            }
-        }
-    );
+	const user = await xusers.findOne(
+		{ handle },
+		{
+			projection: {
+				followers: 0,
+				following: 0,
+			},
+		}
+	);
 
-    if(user) {
-        if(await bcrypt.compare(password, user.password)) {
-            delete user.password;
-            const token = jwt.sign(user, process.env.JWT_SECRET);
-            return res.json({ token });
-        }
-    }
+	if (user) {
+		if (await bcrypt.compare(password, user.password)) {
+			delete user.password;
+			const token = jwt.sign(user, process.env.JWT_SECRET);
+			return res.json({ token });
+		}
+	}
 
-    return res.status(401).json({ 
-        msg: 'incorrect handle or password' 
-    });
+	return res.status(401).json({
+		msg: "incorrect handle or password",
+	});
 });
 
 router.post("/users", async (req, res) => {
-    const { name, handle, profile, password } = req.body;
-    if(!name || !handle || !password) {
-        return res.status(400).json({
-            msg: 'name, handle, password: all required'
-        });
-    }
+	const { name, handle, profile, password } = req.body;
+	if (!name || !handle || !password) {
+		return res.status(400).json({
+			msg: "name, handle, password: all required",
+		});
+	}
 
-    const hash = await bcrypt.hash(password, 10);
-    const user = {
-		name, handle, profile,
+	const hash = await bcrypt.hash(password, 10);
+	const user = {
+		name,
+		handle,
+		profile,
 		password: hash,
 		created: new Date(),
 		followers: [],
 	};
 
-    const result = await xusers.insertOne(user);
-    user._id = result.insertedId;
+	const result = await xusers.insertOne(user);
+	user._id = result.insertedId;
 
-    return res.json(user);
+	return res.json(user);
 });
 
 module.exports = { usersRouter: router };

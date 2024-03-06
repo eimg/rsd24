@@ -1,7 +1,9 @@
 import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useRef, useState } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import { useUIState } from "../providers/UIStateProvider";
 
 export default function Register() {
 	const nameRef = useRef();
@@ -10,6 +12,8 @@ export default function Register() {
 	const passwordRef = useRef();
 
     const navigate = useNavigate();
+
+    const { setFeedbackMessage, setOpenFeedback } = useUIState();
 
 	const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -28,27 +32,36 @@ export default function Register() {
 
 						if (!name || !handle || !password) {
 							setHasError(true);
-                            return false;
+							return false;
 						}
 
 						(async () => {
-                            const api = import.meta.env.VITE_API_URL;
-                            const res = await fetch(`${api}/users`, {
-                                method: 'POST',
-                                body: JSON.stringify({ name, handle, profile, password }),
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                }
-                            });
+							const api = import.meta.env.VITE_API_URL;
+							const res = await fetch(`${api}/users`, {
+								method: "POST",
+								body: JSON.stringify({
+									name,
+									handle,
+									profile,
+									password,
+								}),
+								headers: {
+									"Content-Type": "application/json",
+								},
+							});
 
-                            if(!res.ok) {
-                                setErrorMessage('something wrong, please try again');
-                                setHasError(true);
-                                return false;
-                            }
+							if (!res.ok) {
+								setErrorMessage(
+									"something wrong, please try again"
+								);
+								setHasError(true);
+								return false;
+							}
 
-                            navigate("/login");
-                        })();
+                            setFeedbackMessage("Account created");
+                            setOpenFeedback(true);
+							navigate("/login");
+						})();
 					}}>
 					{hasError && (
 						<Alert
@@ -90,9 +103,15 @@ export default function Register() {
 						Register
 					</Button>
 				</form>
-				<Box sx={{ mt: 2, textAlign: "center" }}>
-					<Link to="/login">Login</Link>
-				</Box>
+				<Button
+					variant="text"
+					sx={{ mt: 2 }}
+					fullWidth
+					onClick={() => {
+						navigate("/login");
+					}}>
+					Login
+				</Button>
 			</Box>
 		</Box>
 	);
