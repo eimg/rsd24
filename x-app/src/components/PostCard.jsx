@@ -10,14 +10,14 @@ import {
 	Avatar,
 	Menu,
 	MenuItem,
-    ListItemIcon,
-    ListItemText,
+	ListItemIcon,
+	ListItemText,
 } from "@mui/material";
 
 import {
 	MoreVert as MenuIcon,
 	Comment as CommentIcon,
-    Delete as DeleteIcon,
+	Delete as DeleteIcon,
 } from "@mui/icons-material";
 
 import { blue, green, grey } from "@mui/material/colors";
@@ -44,10 +44,14 @@ export default function PostCard({ post, like, unlike }) {
 						alignItems: "flex-start",
 						justifyContent: "space-between",
 					}}>
-					<Box
+					<CardActionArea
+						onClick={() => {
+							navigate(`/profile/${post.owner._id}`);
+						}}
 						sx={{
 							display: "flex",
 							alignItems: "center",
+                            justifyContent: "flex-start",
 							gap: 2,
 						}}>
 						<Avatar
@@ -78,7 +82,7 @@ export default function PostCard({ post, like, unlike }) {
 								@{post.owner.handle}
 							</Typography>
 						</Box>
-					</Box>
+					</CardActionArea>
 					<Box>
 						<IconButton
 							onClick={e => {

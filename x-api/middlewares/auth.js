@@ -18,6 +18,7 @@ function auth(req, res, next) {
     if(!user) {
         return res.status(401).json({ msg: "incorrect token", });
     }
+    
     res.locals.user = user;
     next();
 }

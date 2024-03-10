@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Likes from "./pages/Likes";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
             {
                 path: "/likes/:id",
                 element: <Likes />,
+            },
+            {
+                path: "/profile/:id",
+                element: <Profile />
             }
 		],
 	},

@@ -45,6 +45,42 @@ router.get("/posts", async (req, res) => {
 	return res.json(data);
 });
 
+router.get("/posts/profile/:id", async (req, res) => {
+    const { id } = req.params;
+
+	const data = await xposts
+		.aggregate([
+			{
+				$match: { type: "post" },
+			},
+            {
+                $match: { owner: new ObjectId(id) },
+            },
+			{
+				$lookup: {
+					from: "users",
+					localField: "owner",
+					foreignField: "_id",
+					as: "owner",
+				},
+			},
+			{
+				$lookup: {
+					from: "posts",
+					localField: "_id",
+					foreignField: "origin",
+					as: "comments",
+				},
+			},
+			{ $unwind: "$owner" },
+			// { $sort: { _id: -1 } },
+			{ $limit: 10 },
+		])
+		.toArray();
+
+	return res.json(data);
+});
+
 router.put("/posts/like/:id", auth, async (req, res) => {
 	const { id } = req.params;
 	const user = res.locals.user;

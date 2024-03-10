@@ -99,7 +99,7 @@ export default function AppDrawer() {
 								<ListItemButton
 									disableRipple
 									onClick={() => {
-										navigate("/profile");
+										navigate(`/profile/${authUser._id}`);
 										setOpenDrawer(false);
 									}}>
 									<ListItemIcon>
