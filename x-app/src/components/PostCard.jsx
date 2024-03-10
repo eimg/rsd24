@@ -35,6 +35,8 @@ export default function PostCard({ post, like, unlike }) {
 	const [showMenu, setShowMenu] = useState(false);
 	const [menuPosition, setMenuPosition] = useState(null);
 
+    const photo = `${import.meta.env.VITE_PROFILE_PHOTOS}/${post.owner.profile}`;
+
 	return (
 		<Card sx={{ mb: 2 }}>
 			<CardContent>
@@ -55,6 +57,7 @@ export default function PostCard({ post, like, unlike }) {
 							gap: 2,
 						}}>
 						<Avatar
+                            src={photo}
 							sx={{
 								width: 64,
 								height: 64,

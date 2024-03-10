@@ -31,8 +31,16 @@ export default function Profile() {
             const user_data = await user_res.json();
 
 			setUser(user_data);
-            setPhoto(user_data.profile);
-            setCover(user_data.cover);
+
+            const profilePhoto = `${import.meta.env.VITE_PROFILE_PHOTOS}/${
+                user_data.profile
+            }`;
+            setPhoto(profilePhoto);
+
+            const coverPhoto = `${import.meta.env.VITE_COVER_PHOTOS}/${
+				user_data.cover
+			}`;
+            setCover(coverPhoto);
 
 			setIsLoading(false);
 		})();
@@ -103,9 +111,29 @@ export default function Profile() {
 		return res.ok;
 	};
 
-	const changeCover = async e => {
+    const changeCover = async e => {
 		const file = await getFile();
 		setCover(URL.createObjectURL(file));
+
+		const fileName =
+			file.type === "image/png"
+				? `${authUser._id}-cover.png`
+				: `${authUser._id}-cover.jpg`;
+
+		const formData = new FormData();
+		formData.append("cover", file, fileName);
+
+		const api = import.meta.env.VITE_API_URL;
+		const token = localStorage.getItem("token");
+		const res = await fetch(`${api}/users/cover`, {
+			method: "post",
+			body: formData,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		return res.ok;
 	};
 
 	return (
@@ -119,7 +147,7 @@ export default function Profile() {
 					overflow: "hidden",
 				}}
 				onClick={async () => {
-					changeCover();
+					if(user._id === authUser._id) changeCover();
 				}}>
 				<img
 					src={cover}
@@ -135,7 +163,7 @@ export default function Profile() {
 				}}>
 				<Button
 					onClick={async () => {
-						changePhoto();
+						if (user._id === authUser._id) changePhoto();
 					}}>
 					<Avatar
 						src={photo}

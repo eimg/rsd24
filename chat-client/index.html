@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Client</title>
+    <style>
+        body {
+            font-family: Roboto, Arial, Helvetica, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #333;
+            color: #fff;
+        }
+        
+        .box {
+            margin: 20px 0;
+            background: #222;
+            border-radius: 6px;
+        }
+
+        .msgs {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .msgs li {
+            padding: 20px 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .msgs li b {
+            color: greenyellow;
+        }
+
+        form {
+            display: flex;
+        }
+
+        input, button {
+            padding: 10px;
+        }
+
+        #name {
+            width: 100px;
+            font-weight: bold;
+        }
+
+        #msg {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat</h1>
+
+    <div class="box">
+        <ul class="msgs"></ul>
+    </div>
+
+    <form>
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="msg" placeholder="Message">
+        <button type="submit">Button</button>
+    </form>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/chat");
+
+        socket.addEventListener("open", e => {
+            console.log("Chat connection opened");
+        });
+
+        socket.addEventListener("message", e => {
+            const { name, msg } = JSON.parse(e.data);
+            const li = document.createElement("li");
+            li.innerHTML = `<b>${name}:</b> ${msg}`;
+            
+            document.querySelector(".msgs").appendChild(li);
+        });
+
+        document.querySelector("form").onsubmit = e => {
+            e.preventDefault();
+
+            const name = document.querySelector("#name").value;
+            const msg = document.querySelector("#msg").value;
+
+            if(!name || !msg) return false;
+
+            socket.send(JSON.stringify({ name, msg }));
+
+            document.querySelector("#msg").value = "";
+            document.querySelector("#msg").focus();
+        }
+    </script>
+</body>
+</html>
