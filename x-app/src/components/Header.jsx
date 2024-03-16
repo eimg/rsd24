@@ -14,13 +14,33 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useUIState } from "../providers/UIStateProvider";
 import { useAppTheme } from "../providers/AppThemeProvider";
+import { useEffect, useState } from "react";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function Header() {
-	const { setOpenDrawer } = useUIState();
+	const { setOpenDrawer, notiCount, setNotiCount } = useUIState();
 	const { mode, setMode } = useAppTheme();
+
+    const { auth } = useAuth();
 
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
+
+    useEffect(() => {
+		const api = import.meta.env.VITE_API_URL;
+		const token = localStorage.getItem("token");
+
+		(async () => {
+			const res = await fetch(`${api}/notis`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+            const notis = await res.json();
+			setNotiCount( notis.filter(noti => !noti.read).length );
+		})();
+	}, [auth, notiCount]);
 
 	return (
 		<AppBar position="static">
@@ -74,9 +94,12 @@ export default function Header() {
 					)}
 					<IconButton
 						color="inherit"
-						edge="end">
+						edge="end"
+                        onClick={() => {
+                            navigate("/notis");
+                        }}>
 						<Badge
-							badgeContent={1}
+							badgeContent={notiCount}
 							color="error">
 							<NotiIcon />
 						</Badge>

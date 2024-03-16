@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Likes from "./pages/Likes";
 import Profile from "./pages/Profile";
+import Notis from "./pages/Notis";
+import Post from "./pages/Post";
 
 const router = createBrowserRouter([
 	{
@@ -17,6 +19,10 @@ const router = createBrowserRouter([
 				element: <Home />,
 			},
 			{
+				path: "/posts/:id",
+				element: <Post />,
+			},
+			{
 				path: "/login",
 				element: <Login />,
 			},
@@ -24,14 +30,18 @@ const router = createBrowserRouter([
 				path: "/register",
 				element: <Register />,
 			},
-            {
-                path: "/likes/:id",
-                element: <Likes />,
-            },
-            {
-                path: "/profile/:id",
-                element: <Profile />
-            }
+			{
+				path: "/likes/:id",
+				element: <Likes />,
+			},
+			{
+				path: "/profile/:id",
+				element: <Profile />,
+			},
+			{
+				path: "/notis",
+				element: <Notis />,
+			},
 		],
 	},
 ]);

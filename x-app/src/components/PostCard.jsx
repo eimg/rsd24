@@ -117,7 +117,9 @@ export default function PostCard({ post, like, unlike }) {
 						</Menu>
 					</Box>
 				</Box>
-				<CardActionArea>
+				<CardActionArea onClick={() => {
+                    navigate(`/posts/${post._id}`);
+                }}>
 					<Typography sx={{ py: 2, px: 1 }}>{post.body}</Typography>
 				</CardActionArea>
 				<Box

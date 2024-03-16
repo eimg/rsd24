@@ -7,6 +7,7 @@ export function useUIState() {
 }
 
 export default function UIStateProvider({ children }) {
+	const [notiCount, setNotiCount] = useState(0);
 	const [openDrawer, setOpenDrawer] = useState(false);
 	const [openFeedback, setOpenFeedback] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -20,6 +21,8 @@ export default function UIStateProvider({ children }) {
 				setOpenFeedback,
                 feedbackMessage,
                 setFeedbackMessage,
+                notiCount,
+                setNotiCount,
 			}}>
 			{children}
 		</UIStateContext.Provider>

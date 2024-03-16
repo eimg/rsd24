@@ -14,6 +14,9 @@ app.use(usersRouter);
 const { postsRouter } = require("./routers/posts");
 app.use(postsRouter);
 
+const { notisRouter } = require("./routers/notis");
+app.use(notisRouter);
+
 app.listen(process.env.PORT, () => {
     console.log(`X API runnint at ${process.env.PORT}`);
 });
