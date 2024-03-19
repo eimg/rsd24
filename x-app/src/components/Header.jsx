@@ -21,12 +21,12 @@ export default function Header() {
 	const { setOpenDrawer, notiCount, setNotiCount } = useUIState();
 	const { mode, setMode } = useAppTheme();
 
-    const { auth } = useAuth();
+	const { auth } = useAuth();
 
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
-    useEffect(() => {
+	useEffect(() => {
 		const api = import.meta.env.VITE_API_URL;
 		const token = localStorage.getItem("token");
 
@@ -37,9 +37,11 @@ export default function Header() {
 				},
 			});
 
-            const notis = await res.json();
-			setNotiCount( notis.filter(noti => !noti.read).length );
+			const notis = await res.json();
+			const count = auth ? notis.filter(noti => !noti.read).length : 0;
+			setNotiCount(count);
 		})();
+
 	}, [auth, notiCount]);
 
 	return (
@@ -76,7 +78,9 @@ export default function Header() {
 					<XIcon />
 				</IconButton>
 				<Box>
-					<IconButton color="inherit" sx={{ mr: 1}}>
+					<IconButton
+						color="inherit"
+						sx={{ mr: 1 }}>
 						<UsersIcon />
 					</IconButton>
 					{mode === "dark" ? (
@@ -95,9 +99,9 @@ export default function Header() {
 					<IconButton
 						color="inherit"
 						edge="end"
-                        onClick={() => {
-                            navigate("/notis");
-                        }}>
+						onClick={() => {
+							navigate("/notis");
+						}}>
 						<Badge
 							badgeContent={notiCount}
 							color="error">

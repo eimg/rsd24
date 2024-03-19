@@ -11,8 +11,29 @@ const { MongoClient, ObjectId } = require("mongodb");
 const mongo = new MongoClient(process.env.MONGO_HOST);
 const xdb = mongo.db("x");
 const xposts = xdb.collection("posts");
+const xnotis = xdb.collection("notis");
 
 const { auth } = require("../middlewares/auth");
+
+const clients = [];
+
+const jwt = require("jsonwebtoken");
+const secret = process.env.JWT_SECRET;
+
+router.ws("/subscribe", (ws, req) => {
+	ws.on("message", token => {
+		console.log("message received");
+		jwt.verify(token, secret, (err, user) => {
+			if (err) return false;
+
+			if (!clients.find(client => client._id === user._id)) {
+				ws._id = user._id;
+				clients.push(ws);
+				console.log("added a new client");
+			}
+		});
+	});
+});
 
 router.get("/posts", async (req, res) => {
 	const data = await xposts
@@ -37,7 +58,7 @@ router.get("/posts", async (req, res) => {
 				},
 			},
 			{ $unwind: "$owner" },
-			// { $sort: { _id: -1 } },
+			{ $sort: { _id: -1 } },
 			{ $limit: 10 },
 		])
 		.toArray();
@@ -53,9 +74,9 @@ router.get("/posts/:id", async (req, res) => {
 			{
 				$match: { type: "post" },
 			},
-            {
-                $match: { _id: new ObjectId(id) },
-            },
+			{
+				$match: { _id: new ObjectId(id) },
+			},
 			{
 				$lookup: {
 					from: "users",
@@ -70,16 +91,19 @@ router.get("/posts/:id", async (req, res) => {
 					localField: "_id",
 					foreignField: "origin",
 					as: "comments",
-                    // pipeline: [
-                    //     {
-                    //         $match: {
-                    //             from: "users",
-                    //             localField: "owner",
-                    //             foreignField: "_id",
-                    //             as: "owner"
-                    //         }
-                    //     }
-                    // ]
+					pipeline: [
+						{
+							$lookup: {
+								from: "users",
+								localField: "owner",
+								foreignField: "_id",
+								as: "owner",
+							},
+						},
+						{
+							$unwind: "$owner",
+						},
+					],
 				},
 			},
 			{ $unwind: "$owner" },
@@ -134,6 +158,34 @@ router.put("/posts/like/:id", auth, async (req, res) => {
 
 	await xposts.updateOne({ _id: new ObjectId(id) }, { $set: { likes } });
 
+	// Add notification
+	await xnotis.insertOne({
+		type: "like",
+		actor: new ObjectId(user._id),
+		msg: `likes your post`,
+		owner: post.owner,
+		target: post._id,
+		read: false,
+		created: new Date(),
+	});
+
+    // Get noti count
+    let notis = await xnotis
+		.find({ owner: new ObjectId(post.owner), read: false })
+		.sort({ _id: -1 })
+		.toArray();
+
+	notiCount = notis.length || 0;
+
+    // Boradcast noti count
+    clients.map(async client => {
+		if (client._id === post.owner.toString()) {
+			console.log(`broadcast noti count to: ${client._id}`);
+
+			client.send(JSON.stringify({ type: "notis", notiCount }));
+		}
+	});
+
 	return res.json(likes);
 });
 
@@ -147,6 +199,33 @@ router.put("/posts/unlike/:id", auth, async (req, res) => {
 	);
 
 	await xposts.updateOne({ _id: new ObjectId(id) }, { $set: { likes } });
+
+	// Add notification
+	await xnotis.insertOne({
+		type: "like",
+		actor: new ObjectId(user._id),
+		msg: `unlike your post`,
+		owner: post.owner,
+		target: post._id,
+		read: false,
+		created: new Date(),
+	});
+
+	// Get noti count
+	let notis = await xnotis
+		.find({ owner: new ObjectId(post.owner), read: false })
+		.sort({ _id: -1 })
+		.toArray();
+
+	notiCount = notis.length || 0;
+
+	// Boradcast noti count
+	clients.map(async client => {
+		if (client._id === post.owner.toString()) {
+			console.log(`broadcast noti count to: ${client._id}`);
+			client.send(JSON.stringify({ type: "notis", notiCount }));
+		}
+	});
 
 	return res.json(likes);
 });
