@@ -16,24 +16,29 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const multer = require("multer");
-const coverUpload = multer({ dest: "photos/covers/" }); 
+const coverUpload = multer({ dest: "photos/covers/" });
 const profileUpload = multer({ dest: "photos/profiles/" });
 
 const { auth } = require("../middlewares/auth");
 
-router.post("/users/profile", auth, profileUpload.single("profile"), async (req, res) => {
-    const id = res.locals.user._id;
-    const { filename } = req.file;
+router.post(
+	"/users/profile",
+	auth,
+	profileUpload.single("profile"),
+	async (req, res) => {
+		const id = res.locals.user._id;
+		const { filename } = req.file;
 
-    const result = await xusers.updateOne(
-        { _id: new ObjectId(id) },
-        {
-            $set: { profile: filename }
-        },
-    );
+		const result = await xusers.updateOne(
+			{ _id: new ObjectId(id) },
+			{
+				$set: { profile: filename },
+			}
+		);
 
-    return res.json(result);
-});
+		return res.json(result);
+	}
+);
 
 router.post(
 	"/users/cover",
@@ -73,7 +78,7 @@ router.get("/users/likes/:id", async (req, res) => {
 	const post = await xdb
 		.collection("posts")
 		.findOne({ _id: new ObjectId(id) });
-        
+
 	const users = await xusers
 		.find({
 			_id: { $in: post.likes },
@@ -101,15 +106,7 @@ router.post("/login", async (req, res) => {
 		});
 	}
 
-	const user = await xusers.findOne(
-		{ handle },
-		{
-			projection: {
-				followers: 0,
-				following: 0,
-			},
-		}
-	);
+	const user = await xusers.findOne({ handle });
 
 	if (user) {
 		if (await bcrypt.compare(password, user.password)) {
@@ -176,6 +173,172 @@ router.get("/search/users", async (req, res) => {
 	}
 
 	return res.status(404).json({ msg: "user not found" });
+});
+
+router.get("/users/followers/:id", async function (req, res) {
+	const { id } = req.params;
+
+	const user = await xusers
+		.aggregate([
+			{
+				$match: { _id: new ObjectId(id) },
+			},
+			{
+				$lookup: {
+					localField: "followers",
+					from: "users",
+					foreignField: "_id",
+					as: "followers",
+				},
+			},
+		])
+		.toArray();
+
+	return res.json(user[0]);
+});
+
+router.get("/users/following/:id", async function (req, res) {
+	const { id } = req.params;
+
+	const user = await xusers
+		.aggregate([
+			{
+				$match: { _id: new ObjectId(id) },
+			},
+			{
+				$lookup: {
+					localField: "following",
+					from: "users",
+					foreignField: "_id",
+					as: "following",
+				},
+			},
+		])
+		.toArray();
+
+	return res.json(user[0]);
+});
+
+router.put("/users/:id/follow", auth, async (req, res) => {
+	const targetUserId = req.params.id;
+	const authUserId = res.locals.user._id;
+
+	const targetUser = await xusers.findOne({
+		_id: new ObjectId(targetUserId),
+	});
+
+	const authUser = await xusers.findOne({
+		_id: new ObjectId(authUserId),
+	});
+
+	targetUser.followers = targetUser.followers || [];
+	authUser.following = authUser.following || [];
+
+	targetUser.followers.push(new ObjectId(authUserId));
+	authUser.following.push(new ObjectId(targetUserId));
+
+	try {
+		await xusers.updateOne(
+			{ _id: new ObjectId(targetUserId) },
+			{
+				$set: { followers: targetUser.followers },
+			}
+		);
+
+		await xusers.updateOne(
+			{ _id: new ObjectId(authUserId) },
+			{
+				$set: { following: authUser.following },
+			}
+		);
+
+		return res.json({
+			followers: targetUser.followers,
+			following: authUser.following,
+		});
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+});
+
+router.put("/users/:id/unfollow", auth, async (req, res) => {
+	const targetUserId = req.params.id;
+	const authUserId = res.locals.user._id;
+
+	const targetUser = await xusers.findOne({
+		_id: new ObjectId(targetUserId),
+	});
+
+	const authUser = await xusers.findOne({
+		_id: new ObjectId(authUserId),
+	});
+
+	targetUser.followers = targetUser.followers || [];
+	authUser.following = authUser.following || [];
+
+	targetUser.followers = targetUser.followers.filter(
+		userId => userId.toString() !== authUserId
+	);
+
+	authUser.following = authUser.following.filter(
+		userId => userId.toString() !== targetUserId
+	);
+
+	try {
+		await xusers.updateOne(
+			{ _id: new ObjectId(targetUserId) },
+			{
+				$set: { followers: targetUser.followers },
+			}
+		);
+
+		await xusers.updateOne(
+			{ _id: new ObjectId(authUserId) },
+			{
+				$set: { following: authUser.following },
+			}
+		);
+
+		return res.json({
+			followers: targetUser.followers,
+			following: authUser.following,
+		});
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+});
+
+router.put("/users/:id", auth, async (req, res) => {
+	const { id } = req.params;
+	const { user } = res.locals;
+
+	const name = req.body.name || user.name;
+	const profile = req.body.profile || user.profile;
+
+	if (req.body.password) {
+		const hash = await bcrypt.hash(password, 10);
+		await xusers.updateOne(
+			{ _id: new ObjectId(id) },
+			{
+				$set: { name, profile, password: hash },
+			}
+		);
+	} else {
+		await xusers.updateOne(
+			{ _id: new ObjectId(id) },
+			{
+				$set: { name, profile },
+			}
+		);
+	}
+
+	const update = await xusers.findOne({ _id: new ObjectId(id) });
+
+	if (update) {
+		delete update.password;
+		const token = jwt.sign(update, process.env.JWT_SECRET);
+		return res.json({ token });
+	}
 });
 
 module.exports = { usersRouter: router };

@@ -40,7 +40,7 @@ export default function Layout() {
 	useEffect(() => {
 		if (auth) {
 			const token = localStorage.getItem("token");
-			wsc.send(token);
+            wsc.send(token);
 		}
 	}, [auth]);
 

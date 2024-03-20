@@ -1,4 +1,4 @@
-import { Avatar, Box, Button } from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../providers/AuthProvider";
@@ -6,7 +6,11 @@ import { useAuth } from "../providers/AuthProvider";
 import PostCard from "../components/PostCard";
 import { blue, pink } from "@mui/material/colors";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+
+import FollowButton from "../components/FollowButton";
+
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +22,8 @@ export default function Profile() {
 	const { authUser } = useAuth();
 	const { id } = useParams();
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		(async () => {
 			setIsLoading(true);
@@ -28,19 +34,19 @@ export default function Profile() {
 			setPosts(await posts_res.json());
 
 			const user_res = await fetch(`${api}/users/${id}`);
-            const user_data = await user_res.json();
+			const user_data = await user_res.json();
 
 			setUser(user_data);
 
-            const profilePhoto = `${import.meta.env.VITE_PROFILE_PHOTOS}/${
-                user_data.profile
-            }`;
-            setPhoto(profilePhoto);
+			const profilePhoto = `${import.meta.env.VITE_PROFILE_PHOTOS}/${
+				user_data.profile
+			}`;
+			setPhoto(profilePhoto);
 
-            const coverPhoto = `${import.meta.env.VITE_COVER_PHOTOS}/${
+			const coverPhoto = `${import.meta.env.VITE_COVER_PHOTOS}/${
 				user_data.cover
 			}`;
-            setCover(coverPhoto);
+			setCover(coverPhoto);
 
 			setIsLoading(false);
 		})();
@@ -68,6 +74,10 @@ export default function Profile() {
 		});
 
 		setPosts(result);
+	};
+
+	const remove = _id => {
+		setPosts(posts.filter(post => post._id !== _id));
 	};
 
 	const getFile = async () => {
@@ -111,7 +121,7 @@ export default function Profile() {
 		return res.ok;
 	};
 
-    const changeCover = async e => {
+	const changeCover = async e => {
 		const file = await getFile();
 		setCover(URL.createObjectURL(file));
 
@@ -147,7 +157,7 @@ export default function Profile() {
 					overflow: "hidden",
 				}}
 				onClick={async () => {
-					if(user._id === authUser._id) changeCover();
+					if (user._id === authUser._id) changeCover();
 				}}>
 				<img
 					src={cover}
@@ -173,6 +183,45 @@ export default function Profile() {
 							background: pink[500],
 						}}></Avatar>
 				</Button>
+				<Typography>{user.name}</Typography>
+				<Typography sx={{ fontSize: "0.8em", color: "gray" }}>
+					@{user.handle}
+				</Typography>
+				<Box
+					sx={{
+						my: 1,
+						display: "flex",
+						gap: 1,
+						justifyContent: "center",
+						fontSize: "0.8em",
+					}}>
+					<Link
+						style={{ textDecoration: "none", color: "deeppink" }}
+						to={`/followers/${user._id}`}>
+						{(user.followers && user.followers.length) || 0}{" "}
+						Followers
+					</Link>
+					<span>•</span>
+					<Link
+						style={{ textDecoration: "none", color: "deeppink" }}
+						to={`/following/${user._id}`}>
+						{(user.following && user.following.length) || 0}{" "}
+						Following
+					</Link>
+				</Box>
+				{authUser._id === user._id ? (
+					<Button
+						size="small"
+						variant="contained"
+						sx={{ borderRadius: 5, px: 3 }}
+						onClick={() => {
+							navigate("/edit");
+						}}>
+						Edit
+					</Button>
+				) : (
+					<FollowButton user={user} />
+				)}
 			</Box>
 
 			{isLoading ? (
@@ -184,6 +233,7 @@ export default function Profile() {
 						post={post}
 						like={like}
 						unlike={unlike}
+						remove={remove}
 					/>
 				))
 			)}

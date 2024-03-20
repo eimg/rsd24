@@ -28,9 +28,12 @@ import { useNavigate } from "react-router-dom";
 
 import LikeButton from "./LikeButton";
 import { useState } from "react";
+import { useAuth } from "../providers/AuthProvider";
 
-export default function PostCard({ post, like, unlike, focus }) {
+export default function PostCard({ post, like, unlike, focus, remove }) {
 	const navigate = useNavigate();
+
+    const { authUser } = useAuth();
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [menuPosition, setMenuPosition] = useState(null);
@@ -90,36 +93,47 @@ export default function PostCard({ post, like, unlike, focus }) {
 							</Typography>
 						</Box>
 					</CardActionArea>
-					<Box>
-						<IconButton
-							onClick={e => {
-								setShowMenu(true);
-								setMenuPosition(e.currentTarget);
-							}}>
-							<MenuIcon />
-						</IconButton>
-						<Menu
-							anchorEl={menuPosition}
-							open={showMenu}
-							anchorOrigin={{
-								vertical: "top",
-								horizontal: "right",
-							}}
-							transformOrigin={{
-								vertical: "top",
-								horizontal: "right",
-							}}
-							onClose={() => {
-								setShowMenu(false);
-							}}>
-							<MenuItem>
-								<ListItemIcon>
-									<DeleteIcon color="error" />
-								</ListItemIcon>
-								<ListItemText primary="Delete" />
-							</MenuItem>
-						</Menu>
-					</Box>
+					{authUser && authUser._id === post.owner._id && (
+						<Box>
+							<IconButton
+								onClick={e => {
+									setShowMenu(true);
+									setMenuPosition(e.currentTarget);
+								}}>
+								<MenuIcon />
+							</IconButton>
+							<Menu
+								anchorEl={menuPosition}
+								open={showMenu}
+								anchorOrigin={{
+									vertical: "top",
+									horizontal: "right",
+								}}
+								transformOrigin={{
+									vertical: "top",
+									horizontal: "right",
+								}}
+								onClose={() => {
+									setShowMenu(false);
+								}}>
+								<MenuItem
+									onClick={() => {
+										const api = import.meta.env
+											.VITE_API_URL;
+										fetch(`${api}/posts/${post._id}`, {
+											method: "DELETE",
+										});
+
+										remove(post._id);
+									}}>
+									<ListItemIcon>
+										<DeleteIcon color="error" />
+									</ListItemIcon>
+									<ListItemText primary="Delete" />
+								</MenuItem>
+							</Menu>
+						</Box>
+					)}
 				</Box>
 				<CardActionArea
 					onClick={() => {

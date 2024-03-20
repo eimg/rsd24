@@ -204,6 +204,14 @@ router.put("/posts/unlike/:id", auth, async (req, res) => {
 	return res.json(likes);
 });
 
+router.delete("/posts/:id", async (req, res) => {
+    const { id } = req.params;
+
+    // TODO: Auth check required
+    const result = await xposts.deleteOne({ _id: new ObjectId(id) });
+    return res.json(result);
+});
+
 async function getPost(id) {
 	try {
 		const data = await xposts

@@ -12,18 +12,65 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../providers/AuthProvider";
 
 import PostCard from "../components/PostCard";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Home() {
 	const { id } = useParams();
 
 	const input = useRef();
+    const navigate = useNavigate();
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [post, setPost] = useState({});
 	const [hasUpdate, setHasUpdate] = useState(false);
 
 	const { authUser } = useAuth();
+
+    const like = _id => {
+        post.likes.push(authUser._id);
+		setPost({ ...post });
+	};
+
+	const unlike = _id => {
+		post.likes = post.likes.filter(like => like !== authUser._id);
+        setPost({ ...post });
+	};
+
+	const remove = _id => {
+		navigate("/");
+	};
+
+    const commentLike = _id => {
+		post.comments = post.comments.map(post => {
+			if (post._id === _id) {
+				post.likes.push(authUser._id);
+			}
+
+			return post;
+		});
+
+		setPost({ ...post });
+	};
+
+	const commentUnlike = _id => {
+		post.comments = post.comments.map(post => {
+			if (post._id === _id) {
+				post.likes = post.likes.filter(like => like !== authUser._id);
+			}
+
+			return post;
+		});
+
+		setPost({ ...post });
+	};
+
+	const commentRemove = _id => {
+        post.comments = post.comments.filter(post => {
+            return post._id !== _id;
+        })
+
+		setPost({ ...post });
+	};
 
 	useEffect(() => {
 		(async () => {
@@ -47,9 +94,10 @@ export default function Home() {
 				<>
 					<PostCard
 						post={post}
-						like={() => {}}
-						unlike={() => {}}
+						like={like}
+						unlike={unlike}
 						focus={true}
+                        remove={remove}
 					/>
 
 					<Box sx={{ mt: 3 }}>
@@ -58,8 +106,9 @@ export default function Home() {
 								<PostCard
 									key={comment._id}
 									post={comment}
-									like={() => {}}
-									unlike={() => {}}
+									like={commentLike}
+									unlike={commentUnlike}
+                                    remove={commentRemove}
 								/>
 							);
 						})}

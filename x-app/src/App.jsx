@@ -10,6 +10,9 @@ import Notis from "./pages/Notis";
 import Post from "./pages/Post";
 import AddPost from "./pages/AddPost";
 import Search from "./pages/Search";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
+import EditProfile from "./pages/EditProfile";
 
 const router = createBrowserRouter([
 	{
@@ -51,6 +54,18 @@ const router = createBrowserRouter([
 			{
 				path: "/search",
 				element: <Search />,
+			},
+			{
+				path: "/followers/:id",
+				element: <Followers />,
+			},
+			{
+				path: "/following/:id",
+				element: <Following />,
+			},
+			{
+				path: "/edit",
+				element: <EditProfile />,
 			},
 		],
 	},

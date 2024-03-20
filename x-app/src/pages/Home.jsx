@@ -35,6 +35,10 @@ export default function Home() {
 		setPosts(result);
 	};
 
+    const remove = _id => {
+        setPosts(posts.filter(post => post._id !== _id));
+    }
+
 	useEffect(() => {
 		(async () => {
 			setIsLoading(true);
@@ -59,6 +63,7 @@ export default function Home() {
 						post={post}
 						like={like}
 						unlike={unlike}
+                        remove={remove}
 					/>
 				))
 			)}
