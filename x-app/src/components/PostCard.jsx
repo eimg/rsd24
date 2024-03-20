@@ -29,16 +29,20 @@ import { useNavigate } from "react-router-dom";
 import LikeButton from "./LikeButton";
 import { useState } from "react";
 
-export default function PostCard({ post, like, unlike }) {
+export default function PostCard({ post, like, unlike, focus }) {
 	const navigate = useNavigate();
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [menuPosition, setMenuPosition] = useState(null);
 
-    const photo = `${import.meta.env.VITE_PROFILE_PHOTOS}/${post.owner.profile}`;
+	const photo = `${import.meta.env.VITE_PROFILE_PHOTOS}/${
+		post.owner.profile
+	}`;
 
 	return (
-		<Card sx={{ mb: 2 }}>
+		<Card
+			variant="outlined"
+			sx={{ mb: 2, bgcolor: focus ? "post.background" : "transparent" }}>
 			<CardContent>
 				<Box
 					sx={{
@@ -53,11 +57,11 @@ export default function PostCard({ post, like, unlike }) {
 						sx={{
 							display: "flex",
 							alignItems: "center",
-                            justifyContent: "flex-start",
+							justifyContent: "flex-start",
 							gap: 2,
 						}}>
 						<Avatar
-                            src={photo}
+							src={photo}
 							sx={{
 								width: 64,
 								height: 64,
@@ -117,10 +121,18 @@ export default function PostCard({ post, like, unlike }) {
 						</Menu>
 					</Box>
 				</Box>
-				<CardActionArea onClick={() => {
-                    navigate(`/posts/${post._id}`);
-                }}>
-					<Typography sx={{ py: 2, px: 1 }}>{post.body}</Typography>
+				<CardActionArea
+					onClick={() => {
+						navigate(`/posts/${post._id}`);
+					}}>
+					<Typography
+						sx={{
+							py: 2,
+							px: 1,
+							fontSize: focus ? "1.6em" : "1.2em",
+						}}>
+						{post.body}
+					</Typography>
 				</CardActionArea>
 				<Box
 					sx={{

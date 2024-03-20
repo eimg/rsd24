@@ -80,7 +80,10 @@ export default function Header() {
 				<Box>
 					<IconButton
 						color="inherit"
-						sx={{ mr: 1 }}>
+						sx={{ mr: 1 }}
+                        onClick={() => {
+                            navigate("/search");
+                        }}>
 						<UsersIcon />
 					</IconButton>
 					{mode === "dark" ? (

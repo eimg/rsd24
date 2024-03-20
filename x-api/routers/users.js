@@ -148,4 +148,34 @@ router.post("/users", async (req, res) => {
 	return res.json(user);
 });
 
+router.get("/search/users", async (req, res) => {
+	let { q } = req.query;
+
+	try {
+		let result = await xusers
+			.aggregate([
+				{
+					$match: {
+						name: new RegExp(`.*${q}.*`, "i"),
+					},
+				},
+				{
+					$sort: { name: 1 },
+				},
+				{
+					$limit: 5,
+				},
+			])
+			.toArray();
+
+		if (result) {
+			return res.json(result);
+		}
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+
+	return res.status(404).json({ msg: "user not found" });
+});
+
 module.exports = { usersRouter: router };

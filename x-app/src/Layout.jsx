@@ -10,15 +10,16 @@ import { useUIState } from "./providers/UIStateProvider";
 import { useAuth } from "./providers/AuthProvider";
 
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const token = localStorage.getItem("token");
 const wsURL = import.meta.env.VITE_WS_URL;
 const wsc = new WebSocket(`${wsURL}/subscribe`);
 
 wsc.addEventListener("open", () => {
-    if(token) {
-        wsc.send(token);
-    }
+	if (token) {
+		wsc.send(token);
+	}
 });
 
 export default function Layout() {
@@ -27,7 +28,9 @@ export default function Layout() {
 
 	const { auth } = useAuth();
 
-    wsc.addEventListener("message", e => {
+	const navigate = useNavigate();
+
+	wsc.addEventListener("message", e => {
 		const data = JSON.parse(e.data);
 		if (data.type === "notis") {
 			setNotiCount(data.notiCount);
@@ -51,7 +54,10 @@ export default function Layout() {
 				<Outlet />
 				<Fab
 					color="success"
-					sx={{ position: "fixed", bottom: 40, right: 40 }}>
+					sx={{ position: "fixed", bottom: 40, right: 40 }}
+					onClick={() => {
+						navigate("/new");
+					}}>
 					<AddIcon />
 				</Fab>
 			</Container>

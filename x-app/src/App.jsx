@@ -8,6 +8,8 @@ import Likes from "./pages/Likes";
 import Profile from "./pages/Profile";
 import Notis from "./pages/Notis";
 import Post from "./pages/Post";
+import AddPost from "./pages/AddPost";
+import Search from "./pages/Search";
 
 const router = createBrowserRouter([
 	{
@@ -42,10 +44,18 @@ const router = createBrowserRouter([
 				path: "/notis",
 				element: <Notis />,
 			},
+			{
+				path: "/new",
+				element: <AddPost />,
+			},
+			{
+				path: "/search",
+				element: <Search />,
+			},
 		],
 	},
 ]);
 
 export default function App() {
-    return <RouterProvider router={router} />
+	return <RouterProvider router={router} />;
 }
