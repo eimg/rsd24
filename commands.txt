@@ -63,12 +63,12 @@ git remote add origin [repo]      # set origin for current repo
 
 ----------
 
-docker images
-docker run ubuntu echo "Hello Ubuntu"
-docker run -ti ubuntu /bin/bash 
-docker run -p 90:80 -ti ubuntu /bin/bash
-docker ps
-docker exec [container_id] [command]
-docker commit [container_id] [image_name]
-docker tag [image id] name
-docker build . 
+docker images                               # list images
+docker run ubuntu echo "Hello Ubuntu"       # run image in container
+docker run -ti ubuntu /bin/bash             # run with terminal
+docker run -p 90:80 -ti ubuntu /bin/bash    # bind port host:container
+docker ps                                   # list running containers
+docker exec [container_id] [command]        # run command in container
+docker commit [container_id] [image_name]   # save changes
+docker tag [image_id] name:version          # tag name:version
+docker build .                              # build image from Dockerfile
