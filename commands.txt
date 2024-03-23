@@ -60,3 +60,15 @@ git clone [repo]                  # create repo based on [repo]
 git pull                          # get updates from origin repo
 git push                          # send update to origin repo
 git remote add origin [repo]      # set origin for current repo
+
+----------
+
+docker images
+docker run ubuntu echo "Hello Ubuntu"
+docker run -ti ubuntu /bin/bash 
+docker run -p 90:80 -ti ubuntu /bin/bash
+docker ps
+docker exec [container_id] [command]
+docker commit [container_id] [image_name]
+docker tag [image id] name
+docker build . 
