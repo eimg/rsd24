@@ -9,10 +9,22 @@ import { toCelsius } from "../utils/converter.js";
 import App from "../src/App.jsx";
 
 describe("UI test", () => {
-    render(<App />);
-
     it("should render correctly", async () => {
+        render(<App />);
+
         expect(screen.getByRole("title")).toBeInTheDocument();
+    });
+
+    it("should show correct result", async () => {
+        render(<App />);
+
+        await fireEvent.change(screen.getByRole("input"), {
+            target: { value: 100 }
+        });
+
+        await fireEvent.click(screen.getByRole("button"));
+
+        expect(screen.queryByText("37.78")).toBeInTheDocument();
     });
 });
 
