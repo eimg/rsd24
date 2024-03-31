@@ -75,7 +75,11 @@ export default async function Movie({ params }) {
 									<div></div>
 								)}
 								<div className="p-2">
-									<div className="text-sm">{cast.name}</div>
+									<div className="text-sm">
+										<Link href={`/person/${cast.id}`}>
+											{cast.name}
+										</Link>
+									</div>
 									<span className="text-sm text-gray-500">
 										{cast.character}
 									</span>

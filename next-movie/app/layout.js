@@ -2,8 +2,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { Menubar } from "@/components/ui/menubar";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,12 +29,23 @@ async function fetchGenres() {
 export default async function RootLayout({ children }) {
 	const data = await fetchGenres();
 
+    async function search(formData) {
+        "use server";
+
+        const q = formData.get("q");
+        redirect(`/search?q=${q}`);
+    }
+
 	return (
 		<html lang="en">
 			<body className={inter.className}>
 				<div className="container mt-4">
-					<Menubar>
+					<Menubar className="justify-between">
 						<h1 className="mx-4">Next Movie</h1>
+						<form action={search} className="flex space-x-2">
+                            <Input type="text" name="q" />
+                            <Button type="submit">Search</Button>
+						</form>
 					</Menubar>
 
 					<main className="mt-4">
